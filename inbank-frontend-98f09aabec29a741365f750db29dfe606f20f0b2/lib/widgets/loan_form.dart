@@ -27,6 +27,7 @@ class _LoanFormState extends State<LoanForm> {
   int _loanAmountResult = 0;
   int _loanPeriodResult = 0;
   String _errorMessage = '';
+  int _monthlyPayment = 0;
 
   // Submit the form and update the state with the loan decision results.
   // Only submits if the form inputs are validated.
@@ -35,17 +36,11 @@ class _LoanFormState extends State<LoanForm> {
       final result = await _apiService.requestLoanDecision(
           _nationalId, _loanAmount, _loanPeriod);
       setState(() {
-        int tempAmount = int.parse(result['loanAmount'].toString());
-        int tempPeriod = int.parse(result['loanPeriod'].toString());
+        _loanAmountResult = int.parse(result['loanAmount'].toString());
+        _loanPeriodResult = int.parse(result['loanPeriod'].toString());
 
-        if (tempAmount <= _loanAmount || tempPeriod > _loanPeriod) {
-          _loanAmountResult = int.parse(result['loanAmount'].toString());
-          _loanPeriodResult = int.parse(result['loanPeriod'].toString());
-        } else {
-          _loanAmountResult = _loanAmount;
-          _loanPeriodResult = _loanPeriod;
-        }
         _errorMessage = result['errorMessage'].toString();
+        _monthlyPayment = int.parse(result['monthlyPayment'].toString());
       });
     } else {
       _loanAmountResult = 0;
@@ -152,7 +147,7 @@ class _LoanFormState extends State<LoanForm> {
                           padding: EdgeInsets.only(left: 12),
                           child: Align(
                               alignment: Alignment.centerLeft,
-                              child: Text('6 months')),
+                              child: Text('12 months')),
                         ),
                       ),
                       Expanded(
@@ -175,8 +170,10 @@ class _LoanFormState extends State<LoanForm> {
           Column(
             children: [
               Text(
-                  'Approved Loan Amount: ${_loanAmountResult != 0 ? _loanAmountResult : "--"} €'),
+                  'If you borrow $_loanAmount € for ${_loanPeriodResult != 0 ? _loanPeriodResult : "--"} months, the monthly payment will be: ${_monthlyPayment != 0 ? _monthlyPayment : "--"} €'),
               const SizedBox(height: 8.0),
+              Text(
+                  'Maximum Approved Loan Amount: ${_loanAmountResult != 0 ? _loanAmountResult : "--"} €'),
               Text(
                   'Approved Loan Period: ${_loanPeriodResult != 0 ? _loanPeriodResult : "--"} months'),
               Visibility(
