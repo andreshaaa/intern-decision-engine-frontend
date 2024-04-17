@@ -9,6 +9,7 @@ class ApiService {
   String responseAmount = '';
   String responsePeriod = '';
   String responseError = '';
+  String responseMonthly = '';
   http.Client httpClient;
 
   ApiService({http.Client? client}) : httpClient = client ?? http.Client();
@@ -33,12 +34,14 @@ class ApiService {
       responseAmount = responseData['loanAmount'].toString();
       responsePeriod = responseData['loanPeriod'].toString();
       responseError = responseData['errorMessage'].toString();
+      responseMonthly = responseData['monthlyPayment'].toString();
 
       // Return the response data as a map, handling null values if necessary
       return {
         'loanAmount': responseAmount != 'null' ? responseAmount : '0',
         'loanPeriod': responsePeriod != 'null' ? responsePeriod : '0',
         'errorMessage': responseError != 'null' ? responseError : '',
+        'monthlyPayment': responseMonthly != 'null' ? responseMonthly : '0',
       };
     } catch (e) {
       // An unexpected error occurred when querying the server,
@@ -47,6 +50,7 @@ class ApiService {
         'loanAmount': '0',
         'loanPeriod': '0',
         'errorMessage': 'An unexpected error occurred.',
+        'monthlyPayment': 'O',
       };
     }
   }
